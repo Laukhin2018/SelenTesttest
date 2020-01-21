@@ -32,16 +32,27 @@ public class MainClass {
 
 
         // point 1
-        //tests.point1TestLinksInWhoWeServe();
+        String[] verifiableLinks = {"Students", "Instructors", "Book Authors", "Professionals", "Researchers",
+                "Institutions", "Librarians", "Corporations", "Societies", "Journal Editors", "Government"};
+        tests.point1TestLinksInWhoWeServe(verifiableLinks);
 
 
         // point 2
-        //tests.point2TestInputSearch("Java");
+        tests.point2TestInputSearch("Java");
 
+        // point 3
+        tests.point3TestMatchButtonsOnProduct("Java");
+
+
+        driver.quit();
+        driver = null;
+    }
+
+    public void point3TestMatchButtonsOnProduct(String word){
         // point 3
         System.out.println("Point 3:");
 
-        String searchWord = "Java";
+        String searchWord = word;
         WebElement searchBox = driver.findElement(By.cssSelector("#js-site-search-input"));
         searchBox.sendKeys(searchWord);
 
@@ -57,41 +68,51 @@ public class MainClass {
             System.out.println("Find product " + counter);
             List<WebElement> allButtonPresent = product.findElements(By.cssSelector(".nav.nav-tabs.eBundlePlpTab.hidden-xs > li"));
             for (WebElement button : allButtonPresent){
-
-
-                    clickableElement(button);
-                    button.click();
-
-
+                clickableElement(button);
+                button.click();
 
                 WebElement buttonName = button.findElement(By.cssSelector(".productButtonGroupName"));
-                String name = buttonName.getAttribute("textContent");
+                String groupName = buttonName.getAttribute("textContent");
 
 
                 WebElement actionZone = product.findElement(By.cssSelector("#tabContentStyle .tab-pane.active"));
 
-                String name2 = "";
+                String checkedButton = "";
                 try{
                     WebElement currentButton = actionZone.findElement(By.cssSelector(".tab-pane.active button.small-button.add-to-cart-button.js-add-to-cart"));
-                    name2 = currentButton.getAttribute("textContent");
-                    System.out.println(name + " " + name2);
+                    checkedButton = currentButton.getAttribute("innerText");
+
                 }
                 catch (NoSuchElementException e){
                     WebElement currentButton = actionZone.findElement(By.cssSelector(".product-button"));
-                    name2 = currentButton.getAttribute("innerText");
+                    checkedButton = currentButton.getAttribute("innerText");
                 }
 
-                System.out.println(name + " " + name2);
-
+                if (groupName.equals("E-Book") || groupName.equals("Print")){
+                    if(checkedButton.equals("ADD TO CART")){
+                        System.out.println("Group \"" + groupName + "\" match with button \"" + checkedButton + "\"");
+                    }
+                    else {
+                        System.out.println("Error!!! Group \"" + groupName + "\" does not match with button \"" + checkedButton + "\"");
+                    }
+                }
+                else if (groupName.equals("O-Book")){
+                    if(checkedButton.equals("VIEW ON WILEY ONLINE LIBRARY")){
+                        System.out.println("Group \"" + groupName + "\" match with button \"" + checkedButton + "\"");
+                    }
+                    else {
+                        System.out.println("Error!!! \"" + groupName + "\" does not match with \"" + checkedButton +"\"");
+                    }
+                }
+                else {
+                    System.out.println("Error!!! Group \"" + groupName + "\" does not match");
+                }
             }
+            System.out.println("");
             counter++;
-
         }
-
-
-
-        driver.quit();
-        driver = null;
+        driver.get("https://www.wiley.com/en-us");
+        System.out.println("End test!");
     }
 
     public void point2TestInputSearch(String word){
@@ -117,9 +138,12 @@ public class MainClass {
             }
             counter++;
         }
+        searchBox.clear();
+        driver.get("https://www.wiley.com/en-us");
+        System.out.println("End test!");
     }
 
-    public void point1TestLinksInWhoWeServe(){
+    public void point1TestLinksInWhoWeServe(String[] verifiableLinks){
         System.out.println("Point 1:");
         ArrayList<String> result = new ArrayList<String>();
         List<WebElement> allLinkWhoWeServe = driver.findElements(By.cssSelector("#Level1NavNode1 > ul > li > a[href]"));
@@ -127,16 +151,25 @@ public class MainClass {
 
         for (int item = 1; item <= countLinkWhoWeServe; item++){
 
-            if (item == 11){
-                continue;
-            }
-
             WebElement buttonWhoWeServe = driver.findElement(By.cssSelector("#main-header-navbar > ul > li.dropdown-submenu:nth-child(1)"));
             clickableElement(buttonWhoWeServe);
             buttonWhoWeServe.click();
 
             WebElement linksWhoWeServe = driver.findElement(By.cssSelector("#Level1NavNode1 > ul > li:nth-child(" + item + ") > a[href]"));
             clickableElement(linksWhoWeServe);
+            String name = linksWhoWeServe.getAttribute("innerText");
+
+            Boolean hasLink = true;
+            for (String linkName : verifiableLinks){
+                hasLink = linkName.equals(name);
+                if(hasLink){
+                    break;
+                }
+            }
+            if (!hasLink){
+                continue;
+            }
+
             linksWhoWeServe.click();
 
             WebElement bannerImage = driver.findElement(By.cssSelector(".sg-title-h1"));
@@ -151,6 +184,7 @@ public class MainClass {
         for(String item : result){
             System.out.println(item);
         }
+        System.out.println("End test!");
     }
 
     public static void  scrollToElement(WebElement outElement){
