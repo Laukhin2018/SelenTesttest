@@ -22,7 +22,7 @@ public class MainClass {
         driver = new ChromeDriver();
         wait = new WebDriverWait(driver,15);
         actions = new Actions(driver);
-        driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
         driver.manage().window().maximize();
 
         driver.get("https://www.wiley.com/en-us");
@@ -49,9 +49,42 @@ public class MainClass {
         clickableElement(searchButton);
         searchButton.click();
 
+        int counter = 1;
         List<WebElement> allProductItem = driver.findElements(By.cssSelector(".product-item"));
         for(WebElement product : allProductItem){
             scrollToElement(product);
+
+            System.out.println("Find product " + counter);
+            List<WebElement> allButtonPresent = product.findElements(By.cssSelector(".nav.nav-tabs.eBundlePlpTab.hidden-xs > li"));
+            for (WebElement button : allButtonPresent){
+
+
+                    clickableElement(button);
+                    button.click();
+
+
+
+                WebElement buttonName = button.findElement(By.cssSelector(".productButtonGroupName"));
+                String name = buttonName.getAttribute("textContent");
+
+
+                WebElement actionZone = product.findElement(By.cssSelector("#tabContentStyle .tab-pane.active"));
+
+                String name2 = "";
+                try{
+                    WebElement currentButton = actionZone.findElement(By.cssSelector(".tab-pane.active button.small-button.add-to-cart-button.js-add-to-cart"));
+                    name2 = currentButton.getAttribute("textContent");
+                    System.out.println(name + " " + name2);
+                }
+                catch (NoSuchElementException e){
+                    WebElement currentButton = actionZone.findElement(By.cssSelector(".product-button"));
+                    name2 = currentButton.getAttribute("innerText");
+                }
+
+                System.out.println(name + " " + name2);
+
+            }
+            counter++;
 
         }
 
