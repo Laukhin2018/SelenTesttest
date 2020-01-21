@@ -34,14 +34,53 @@ public class MainClass {
         // point 1
         String[] verifiableLinks = {"Students", "Instructors", "Book Authors", "Professionals", "Researchers",
                 "Institutions", "Librarians", "Corporations", "Societies", "Journal Editors", "Government"};
-        tests.point1TestLinksInWhoWeServe(verifiableLinks);
+        //tests.point1TestLinksInWhoWeServe(verifiableLinks);
 
 
         // point 2
-        tests.point2TestInputSearch("Java");
+        //tests.point2TestInputSearch("Java");
 
         // point 3
-        tests.point3TestMatchButtonsOnProduct("Java");
+        //tests.point3TestMatchButtonsOnProduct("Java");
+
+        // point 4
+        String linkName = "Education";
+        System.out.println("Point 4:");
+
+        ArrayList<String> result = new ArrayList<String>();
+        WebElement resultLink;
+
+
+
+        List<WebElement> allLinkSubjects = driver.findElements(By.cssSelector("#Level1NavNode2 > ul > li > a[href]"));
+        int countLinkSubjects = allLinkSubjects.size();
+
+        for (int item = 1; item <= countLinkSubjects; item++) {
+
+            WebElement buttonSubjects = driver.findElement(By.cssSelector("#main-header-navbar > ul > li.dropdown-submenu:nth-child(2)"));
+            clickableElement(buttonSubjects);
+            buttonSubjects.click();
+
+            WebElement linksSubjects = driver.findElement(By.cssSelector("#Level1NavNode1 > ul > li:nth-child(" + item + ") > a[href]"));
+            clickableElement(linksSubjects);
+            String name = linksSubjects.getAttribute("innerText");
+
+            Boolean hasLink = false;
+            for (String linkText : verifiableLinks) {
+                hasLink = linkText.equals(linkName);
+                if (hasLink) {
+                    break;
+                }
+            }
+            if (hasLink) {
+                resultLink = linksSubjects;
+                clickableElement(resultLink);
+                System.out.println("Раздел Education доступен");
+                resultLink.click();
+                break;
+            }
+        }
+
 
 
         driver.quit();
@@ -117,6 +156,7 @@ public class MainClass {
 
     public void point2TestInputSearch(String word){
         System.out.println("Point 2:");
+
         String searchWord = word;
         WebElement searchBox = driver.findElement(By.cssSelector("#js-site-search-input"));
         searchBox.sendKeys(searchWord);
@@ -145,6 +185,7 @@ public class MainClass {
 
     public void point1TestLinksInWhoWeServe(String[] verifiableLinks){
         System.out.println("Point 1:");
+
         ArrayList<String> result = new ArrayList<String>();
         List<WebElement> allLinkWhoWeServe = driver.findElements(By.cssSelector("#Level1NavNode1 > ul > li > a[href]"));
         int countLinkWhoWeServe = allLinkWhoWeServe.size();
