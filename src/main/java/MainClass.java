@@ -16,8 +16,8 @@ public class MainClass {
     public static WebDriverWait wait;
     public static Actions actions;
 
-    public static void main(String[] args) {
-        System.setProperty("webdriver.chrome.driver", "G:\\chromedriver.exe");
+    public static void main(String[] args) throws InterruptedException {
+        System.setProperty("webdriver.chrome.driver", "C:\\browserDriver\\chromedriver.exe");
 
         driver = new ChromeDriver();
         wait = new WebDriverWait(driver,15);
@@ -47,39 +47,53 @@ public class MainClass {
         String linkName = "Education";
         System.out.println("Point 4:");
 
-        ArrayList<String> result = new ArrayList<String>();
-        WebElement resultLink;
+        String[] checkedSumLinls = {"Information & Library Science",  "Education & Public Policy",
+                "K-12 General", "Higher Education General",
+                "Vocational Technology ",
+                " Conflict Resolution & Mediation (School settings) ",
+                " Curriculum Tools- General ", " Special Educational Needs ", " Theory of Education ",
+                " Education Special Topics ", " Educational Research & Statistics ", " Literacy & Reading ",
+                "Classroom Management"};
 
+        WebElement buttonSubjects = driver.findElement(By.cssSelector("#main-header-navbar > ul > li.dropdown-submenu:nth-child(2)"));
+        actions.moveToElement(buttonSubjects).build().perform();
+        Thread.sleep(1000);
 
+        List<WebElement> allLinkSubjects = driver.findElements(By.cssSelector("#Level1NavNode2 > ul > li"));
+        boolean hasLink = true;
+        for (WebElement item : allLinkSubjects){
+            String name = item.getAttribute("innerText");
+            hasLink = name.contains(linkName);
+            if(hasLink){
+                actions.moveToElement(item).build().perform();
+                Thread.sleep(1000);
 
-        List<WebElement> allLinkSubjects = driver.findElements(By.cssSelector("#Level1NavNode2 > ul > li > a[href]"));
-        int countLinkSubjects = allLinkSubjects.size();
-
-        for (int item = 1; item <= countLinkSubjects; item++) {
-
-            WebElement buttonSubjects = driver.findElement(By.cssSelector("#main-header-navbar > ul > li.dropdown-submenu:nth-child(2)"));
-            clickableElement(buttonSubjects);
-            buttonSubjects.click();
-
-            WebElement linksSubjects = driver.findElement(By.cssSelector("#Level1NavNode1 > ul > li:nth-child(" + item + ") > a[href]"));
-            clickableElement(linksSubjects);
-            String name = linksSubjects.getAttribute("innerText");
-
-            Boolean hasLink = false;
-            for (String linkText : verifiableLinks) {
-                hasLink = linkText.equals(linkName);
-                if (hasLink) {
-                    break;
+                Boolean has = true;
+                for (String link : checkedSumLinls){
+                    has = link.contains(name);
+                    if(has){
+                        System.out.println(link + " has!!!");
+                        break;
+                    }
                 }
-            }
-            if (hasLink) {
-                resultLink = linksSubjects;
-                clickableElement(resultLink);
-                System.out.println("Раздел Education доступен");
-                resultLink.click();
+                if (!has){
+                    continue;
+                }
+
                 break;
             }
         }
+        if(!hasLink){
+            System.out.println("Error! Link not found!");
+        }
+
+
+
+
+
+
+
+
 
 
 
